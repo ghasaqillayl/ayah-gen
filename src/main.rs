@@ -46,24 +46,32 @@ fn main() {
                 None => 1,
             };
             println!("Generating {} questions...", n);
-            let mut rng = rand::rng();
             let config = std::fs::read_to_string("config.json").expect("Unable to read config file, maybe you need to run the config command first");
             let config_data: serde_json::Value = serde_json::from_str(&config).expect("Unable to parse config data");
             let sfrom = config_data["from_surah"].as_u64().unwrap() as usize;
             let afrom = config_data["from_ayah"].as_u64().unwrap() as usize;
             let supto = config_data["upto_surah"].as_u64().unwrap() as usize;
             let aupto = config_data["upto_ayah"].as_u64().unwrap() as usize;
-            let srand = rng.random_range(sfrom..=supto);
-            let arand = if srand == sfrom && srand == supto {
-                rng.random_range(afrom..=aupto)
-            } else if srand == sfrom {
-                rng.random_range(afrom..=SURAHS[srand - 1].1)
-            } else if srand == supto {
-                rng.random_range(1..=aupto)
-            } else {
-                rng.random_range(1..=SURAHS[srand - 1].1)
-            };
-            println!("Randomly selected: Surah {} Ayah {}", srand, arand);
+            for i in 0..n {
+                print!("Question {}:", i + 1);
+                let mut rng = rand::rng();
+                let srand = rng.random_range(sfrom..=supto);
+
+                let arand = if srand == sfrom && srand == supto {
+                    rng.random_range(afrom..=aupto)
+                }
+                else if srand == sfrom {
+                    rng.random_range(afrom..=SURAHS[srand - 1].1)
+                }
+                else if srand == supto {
+                    rng.random_range(1..=aupto)
+                }
+                else {
+                    rng.random_range(1..=SURAHS[srand - 1].1)
+                };
+                println!("  Surah {} Ayah {}", srand, arand);
+            }
+            
         },
     }
 }
